@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { logToConsole } from 'react-native/Libraries/Utilities/RCTLog';
 
 export default function App() {
   const [text, setText] = useState("")
@@ -27,6 +28,26 @@ export default function App() {
     } catch (err) {
       console.log(err)
     }
+  }
+  const deleteTodo = (key) => {
+    Alert.alert("지우겠습니까?", "진짜루?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            const newTodos = { ...toDos }
+            delete newTodos[key]
+            setTodos(newTodos)
+            saveTodos(newTodos)
+          }
+        }
+      ]
+    )
   }
 
 
@@ -92,6 +113,12 @@ export default function App() {
               >
                 {toDos[key].text}
               </Text>
+              <TouchableOpacity
+                onPress={() => deleteTodo(key)}>
+                <Text>
+                  ❌
+                </Text>
+              </TouchableOpacity>
             </View> :
             null
         ))}
@@ -128,6 +155,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 15,
     marginBottom: 10,
+    flexDirection: 'row',
     justifyContent: 'space-between'
   },
   toDoText: {
